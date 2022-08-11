@@ -23,12 +23,14 @@
 </script>
 
 <template style="overflow: hidden">
-   <div id="app">
+  <header>
+    <div class="wrapper">
       <div id="nav">
           <router-link v-if="authenticated" to="/login" v-on:click.native="logout()" replace>Logout</router-link>
       </div>
-      <RouterView @authenticated="setAuthenticated"/>
-  </div>
+    </div>
+  </header>
+  <RouterView @authenticated="setAuthenticated"/> 
 </template>
 
 <style>
@@ -36,16 +38,18 @@
 
 #app {
   display: flex;
-    flex: 1;
+  flex: 1;
   height: 100vh;
   margin: 0 auto;
   overflow: hidden;
   font-weight: normal;
+  flex-direction: column;
 }
 
 header {
   line-height: 1.5;
   max-height: 100vh;
+  text-align: right;
 }
 
 .logo {
@@ -59,30 +63,16 @@ header {
   }
 }
 
-nav {
+#nav {
   width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
+  text-align: right;
+  background-color: lightblue;
 }
 
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
+a:link { text-decoration: none; }
+a:visited { text-decoration: none; }
+a:hover { text-decoration: none; }
+a:active { text-decoration: none; }
 
 @media (min-width: 1024px) {
   body {
@@ -90,29 +80,19 @@ nav a:first-of-type {
     place-items: center;
   }
 
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
+  #nav {
+    width: 100%;
+    text-align: right;
+    background-color: lightblue;
   }
 
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+  a:link { text-decoration: none; }
+  a:visited { text-decoration: none; }
+  a:hover { text-decoration: none; }
+  a:active { text-decoration: none; }
 
   .logo {
     margin: 0 2rem 0 0;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
   }
 }
 </style>

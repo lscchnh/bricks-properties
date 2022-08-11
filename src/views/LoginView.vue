@@ -1,7 +1,7 @@
 <template>
     <div id="login">
-        <h1>Bricks.co credentials</h1>
-        <input type="text" name="email" v-model="input.email" placeholder="Email" />
+        <h1>Enter Bricks.co credentials</h1>
+        <input type="email" name="email" v-model="input.email" placeholder="Email" />
         <input type="password" name="password" v-model="input.password" placeholder="Password" />
         <button type="button" v-on:click="login()">Login</button>
     </div>
@@ -9,6 +9,8 @@
 
 <script>
     import axios from "axios";
+    import { useToast } from 'vue-toastification';
+    const toast = useToast();
     export default {
         name: 'Login',
         data() {
@@ -24,13 +26,14 @@
                 if(this.input.email != "" && this.input.password != "") {    
                     const loginUrl = 'https://api.bricks.co/customers/email/sign-in';
                     const loginPayload = { email: this.input.email, password: this.input.password };
-                    const loginResponse = await axios.post(loginUrl, loginPayload); 
-                    localStorage.setItem('Token', loginResponse.data.token)              
-                    this.$emit("authenticated", true);
-                    this.$router.replace({ name: "map" });
-                             
+                    await axios.post(loginUrl, loginPayload).then((loginResponse) => {
+                        localStorage.setItem('Token', loginResponse.data.token)              
+                        this.$emit("authenticated", true);
+                        this.$router.replace({ name: "map" }); 
+                    })
+                    .catch((err) => {toast.error("Invalid credentials"); return []});                     
                 } else {
-                    console.log("An email and password must be present");
+                    toast.error("Please fill credentials");
                 }
             }
         }
