@@ -17,8 +17,9 @@ export default defineConfig({
       includeAssets: ["/favicon.ico", "/bricks-properties/favicon.ico"],
       manifest: {
         name: "Bricks properties",
-        short_name: "TF",
-        description: "An application to show your bricks.co investments thanks to OpenStreetMap",
+        short_name: "BP",
+        description:
+          "An application to show your bricks.co investments thanks to OpenStreetMap",
         theme_color: "#ffffff",
         background_color: "#ffffff",
         display: "standalone",

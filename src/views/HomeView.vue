@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import MapComponentComposition from '../components/MapComponentComposition.vue'
+import MapComponentComposition from "../components/MapComponentComposition.vue";
 </script>
 
 <template>
