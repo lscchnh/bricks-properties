@@ -122,15 +122,14 @@ const mapState = reactive({
 });
 
 const onLoad = async () => {
+  loadingMarkers.value = true;
   mapState.map = (mapLeaflet as any).value.leafletObject;
-  await loadpropertyMarkers();
+  await loadpropertyMarkers().then(() => loadingMarkers.value = false)
 };
 
 const loadpropertyMarkers = async () => {
-  loadingMarkers.value = true;
   const newMarkers = await BricksApi.getMyProperties();
   mapState.propertyMarkers =
     newMarkers.length > 0 ? newMarkers : mapState.propertyMarkers;
-  loadingMarkers.value = false;
 };
 </script>

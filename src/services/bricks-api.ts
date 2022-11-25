@@ -23,7 +23,8 @@ export type BricksUser = {
 export default {
   async getMyProperties() {
     const propertiesUrl = `https://api.bricks.co/customers/properties?take=1000&cursor=0`;
-    const geocodeUrl = "https://api-adresse.data.gouv.fr/search/";
+    const osmGeocodeUrl = "https://nominatim.openstreetmap.org/search?format=json";
+    const iqGeocodeUrl = `https://eu1.locationiq.com/v1/search?format=json&key=${atob("cGsuMDY0ZDU2YjM4YzAwOGU1OWUzYTdlNzYzYWRiNjk0MDE=")}&limit=1`
     const propertiesResponse = await axios.get<{ properties: Properties[] }>(
       propertiesUrl,
       {
@@ -36,11 +37,19 @@ export default {
     return Promise.all(
       propertiesResponse.data?.properties.map(async (e) => {
         const geocodeResponse = await axios.get<{
-          features: any;
-          geoProperties: any;
-        }>(`${geocodeUrl}?q=${e.address.fr}`);
-        e.lng = geocodeResponse.data?.features[0].geometry.coordinates[0];
-        e.lat = geocodeResponse.data?.features[0].geometry.coordinates[1];
+          data: any;
+        }>(`${osmGeocodeUrl}&q=${e.address.fr}`);
+        if (geocodeResponse.data[0] != undefined) {
+          e.lng = geocodeResponse.data[0].lon;
+          e.lat = geocodeResponse.data[0].lat;
+        }
+        else {
+          const geocodeResponse2 = await axios.get<{
+            data: any;
+          }>(`${iqGeocodeUrl}&q=${e.address.fr}`);
+          e.lng = geocodeResponse2.data[0].lon;
+          e.lat = geocodeResponse2.data[0].lat;
+        }
         return e;
       })
     );
