@@ -43,12 +43,19 @@ export default {
     async login() {
       if (this.input.email != "" && this.input.password != "") {
         const loginUrl = "https://api.bricks.co/customers/email/sign-in";
+        
         const loginPayload = {
-          email: this.input.email,
-          password: this.input.password,
+          email: this.input.email
         };
+        
+        const loginHeaders = {
+          headers: {
+            'x-password': this.input.password
+          }
+        };
+
         await axios
-          .post(loginUrl, loginPayload)
+          .post(loginUrl, loginPayload, loginHeaders)
           .then((loginResponse) => {
             localStorage.setItem("Token", loginResponse.data.token);
             this.$emit("authenticated", true);
