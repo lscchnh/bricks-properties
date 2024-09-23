@@ -5,6 +5,7 @@
       v-model="mapState.zoom"
       v-model:zoom="mapState.zoom"
       :center="[45, 2.9]"
+      :options="{ zoomControl: false }"
       @ready="onLoad"
     >
       <l-tile-layer
