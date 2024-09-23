@@ -116,7 +116,7 @@ const mapLeaflet = ref(null);
 const loadingMarkers = ref(false);
 
 const mapState = reactive({
-  zoom: 5,
+  zoom: 6,
   map: {},
   propertyMarkers: [] as Properties[],
 });
