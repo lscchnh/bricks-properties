@@ -35,23 +35,38 @@ export default {
     );
 
     return Promise.all(
-      propertiesResponse.data?.properties.map(async (e) => {
-        const geocodeResponse = await axios.get<{
-          data: any;
-        }>(`${osmGeocodeUrl}&q=${e.address.fr}`);
-        if (geocodeResponse.data[0] != undefined) {
-          e.lng = geocodeResponse.data[0].lon;
-          e.lat = geocodeResponse.data[0].lat;
-        }
-        else {
-          const geocodeResponse2 = await axios.get<{
-            data: any;
-          }>(`${iqGeocodeUrl}&q=${e.address.fr}`);
-          e.lng = geocodeResponse2.data[0].lon;
-          e.lat = geocodeResponse2.data[0].lat;
-        }
+      propertiesResponse.data?.properties.map(async (e, index) => {
+        try {
+          await new Promise((resolve) => setTimeout(resolve, index * 200));
+
+          const geocodeResponse = await axios.get(`${osmGeocodeUrl}&q=${encodeURIComponent(e.address.fr)}`);
+    
+          if (geocodeResponse.data && geocodeResponse.data.length > 0) {
+            e.lng = geocodeResponse.data[0].lon;
+            e.lat = geocodeResponse.data[0].lat;
+          } else {
+            throw new Error("Empty OSM Geocode response");
+          }
+        } catch (error) {
+          console.log(`Error with OSM Geocode, falling back to LocationIQ: ${error.message}`);
+    
+          try {
+            const geocodeResponse2 = await axios.get(`${iqGeocodeUrl}&q=${encodeURIComponent(e.address.fr)}`);
+    
+            if (geocodeResponse2.data && geocodeResponse2.data.length > 0) {
+              e.lng = geocodeResponse2.data[0].lon;
+              e.lat = geocodeResponse2.data[0].lat;
+            } else {
+              console.log(`LocationIQ returned an empty response for address: ${e.address.fr}`);
+            }
+          } catch (error) {
+            console.log(`Error with LocationIQ: ${error.message}`);
+            e.lng = -8.389829;
+            e.lat = 41.206541;
+          }
+        }       
         return e;
       })
-    );
-  },
+    );    
+  }
 };
