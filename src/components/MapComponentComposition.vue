@@ -28,33 +28,17 @@
           </h2>
           <img
             v-bind:src="`${property.imageGallery[0]}`"
-            style="max-height: 200px; max-width: 450px; margin: auto"
+            style="max-height: 200px; max-width: 300px; margin: auto"
           />
           <ul>
             <li>
-              Return on investment : {{ property.returnOnInvestment }}% (+{{
-                (
-                  (property.bricksUser.currentOwned * property.capitalGrowth) /
-                  10
-                ).toFixed(2)
-              }}€/y)
+              Return on investment : {{ property.returnOnInvestment.toFixed(2) }}%
+            </li>
+            <li v-if="property.rentalDividends !== undefined">
+              Rental dividends : {{ property.rentalDividends?.toFixed(2) }}%
             </li>
             <li>
-              Rental dividends : {{ property.rentalDividends }}% ({{
-                (
-                  (property.bricksUser.currentOwned *
-                    property.rentalDividends) /
-                  10
-                ).toFixed(2)
-              }}€/y)
-            </li>
-            <li>
-              Bricks owned : {{ property.bricksUser.currentOwned }} (+{{
-                (
-                  (property.bricksUser.currentOwned / 10) *
-                  (property.capitalGrowth + property.rentalDividends)
-                ).toFixed(2)
-              }}€/y)
+              Bricks owned : {{ property.investorBricks.owned }}
             </li>
           </ul>
         </l-popup>

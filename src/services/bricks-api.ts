@@ -1,15 +1,12 @@
 import axios from "axios";
 
-export type Properties = {
+export type Property = {
   id: number;
   address: Address;
   lat: number;
   lng: number;
-  returnOnInvestment: number;
   rentalDividends: number;
-  bricksUser: BricksUser;
-  capitalGrowth: number;
-  imageGallery: string[];
+  investorBricks: BricksUser;
 };
 
 export type Address = {
@@ -17,16 +14,16 @@ export type Address = {
 };
 
 export type BricksUser = {
-  currentOwned: number;
+  owned: number;
 };
 
 export default {
   async getMyProperties() {
-    const propertiesUrl = `https://api.bricks.co/customers/properties?take=1000&cursor=0`;
+    const propertiesUrl = `https://api.bricks.co/properties`;
     const osmGeocodeUrl = "https://nominatim.openstreetmap.org/search?format=json";
     const iqGeocodeUrl = `https://eu1.locationiq.com/v1/search?format=json&key=${atob("cGsuMDY0ZDU2YjM4YzAwOGU1OWUzYTdlNzYzYWRiNjk0MDE=")}&limit=1`
-    const propertiesResponse = await axios.get<{ properties: Properties[] }>(
-      propertiesUrl,
+    const propertiesResponse = await axios.get<{ properties: Property[] }>(
+      `${propertiesUrl}?take=1000&cursor=0`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("Token")}`,
@@ -35,15 +32,27 @@ export default {
     );
 
     return Promise.all(
-      propertiesResponse.data?.properties.map(async (e, index) => {
-        try {
-          await new Promise((resolve) => setTimeout(resolve, index * 200));
+      propertiesResponse.data?.properties
+      .filter((prop) => prop.investorBricks.owned > 0)
+      .map(async (e, index) => {
 
-          const geocodeResponse = await axios.get(`${osmGeocodeUrl}&q=${encodeURIComponent(e.address.fr)}`);
+        const property = (await axios.get<{data: Property}>(
+          `${propertiesUrl}/${e.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("Token")}`,
+            },
+          }
+        )).data; 
+
+        try {
+          await new Promise((resolve) => setTimeout(resolve, index * 500));
+
+          const geocodeResponse = await axios.get(`${osmGeocodeUrl}&q=${encodeURIComponent(property.address.fr)}`);
     
           if (geocodeResponse.data && geocodeResponse.data.length > 0) {
-            e.lng = geocodeResponse.data[0].lon;
-            e.lat = geocodeResponse.data[0].lat;
+            property.lng = geocodeResponse.data[0].lon;
+            property.lat = geocodeResponse.data[0].lat;
           } else {
             throw new Error("Empty OSM Geocode response");
           }
@@ -51,21 +60,21 @@ export default {
           console.log(`Error with OSM Geocode, falling back to LocationIQ: ${error.message}`);
     
           try {
-            const geocodeResponse2 = await axios.get(`${iqGeocodeUrl}&q=${encodeURIComponent(e.address.fr)}`);
+            const geocodeResponse2 = await axios.get(`${iqGeocodeUrl}&q=${encodeURIComponent(property.address.fr)}`);
     
             if (geocodeResponse2.data && geocodeResponse2.data.length > 0) {
-              e.lng = geocodeResponse2.data[0].lon;
-              e.lat = geocodeResponse2.data[0].lat;
+              property.lng = geocodeResponse2.data[0].lon;
+              property.lat = geocodeResponse2.data[0].lat;
             } else {
-              console.log(`LocationIQ returned an empty response for address: ${e.address.fr}`);
+              console.log(`LocationIQ returned an empty response for address: ${property.address.fr}`);
             }
           } catch (error) {
             console.log(`Error with LocationIQ: ${error.message}`);
-            e.lng = -8.389829;
-            e.lat = 41.206541;
+            property.lng = -8.389829;
+            property.lat = 41.206541;
           }
         }       
-        return e;
+        return property;
       })
     );    
   }
