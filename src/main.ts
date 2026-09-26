@@ -1,11 +1,8 @@
 import { createApp } from "vue";
 import App from "./App.vue";
-import router from "./router";
-import Toast from "vue-toastification";
+import { removeKey } from "./lib/storage";
 
-import "vue-toastification/dist/index.css";
+// Versions before 1.0 stored the Bricks.co session token here; it is no longer needed.
+removeKey("Token");
 
-const app = createApp(App);
-app.use(router);
-app.use(Toast);
-app.mount("#app");
+createApp(App).mount("#app");

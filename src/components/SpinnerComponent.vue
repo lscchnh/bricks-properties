@@ -22,10 +22,10 @@
   width: 52px;
   height: 52px;
   margin: 8px;
-  border: 6px solid #fff;
+  border: 6px solid var(--accent);
   border-radius: 50%;
   animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-  border-color: #fff transparent transparent transparent;
+  border-color: var(--accent) transparent transparent transparent;
 }
 
 .lds-ring div:nth-child(1) {
